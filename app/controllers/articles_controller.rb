@@ -17,7 +17,7 @@ class ArticlesController < ApplicationController
     end
 
     def create
-        if current_user.articles.create(create_attributes)
+        if Article.create(create_attributes)
             render json: {code: 200, message: 'Article created'}
         else
             render json: {code: 200, message: 'Article not created'}
@@ -27,6 +27,7 @@ class ArticlesController < ApplicationController
     private
 
     def create_attributes
+        params[:article][:creator_id] = current_user.id
         params.require(:article).permit(:name, :creator_id)
     end
 end
