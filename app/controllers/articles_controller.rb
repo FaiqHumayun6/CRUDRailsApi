@@ -11,9 +11,15 @@ class ArticlesController < ApplicationController
 
     def show
         @article = Article.find(params[:id])
-        render json: {
-        status: { code: 200, message: 'Required article ',data: @article }
-        }
+        if @article.creator_id == current_user.id
+            render json: {
+            status: { code: 200, message: 'Required article ',data: @article }
+            }
+        else
+            render json: {
+            status: { code: 403, message: 'Access denied', data: nil }
+            }
+        end
     end
 
     def create
