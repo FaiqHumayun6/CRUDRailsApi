@@ -2,7 +2,7 @@ class ArticlesController < ApplicationController
     respond_to :json
 
     def index
-        @articles = Article.where(creator_id: current_user.id)
+        @articles = current_user.articles.all
         render json: {
         status: { code: 200, message: 'Articles index',data: @articles }
         }
@@ -10,20 +10,16 @@ class ArticlesController < ApplicationController
 
 
     def show
-        @article = Article.find(params[:id])
-        if @article.creator_id == current_user.id
-            render json: {
-            status: { code: 200, message: 'Required article ',data: @article }
-            }
-        else
-            render json: {
-            status: { code: 403, message: 'Access denied', data: nil }
-            }
-        end
+        @article = current_user.articles.find(params[:id])
+        render json: {
+        status: { code: 200, message: 'Required article ',data: @article }
+        }
     end
 
     def create
-        if Article.create(create_attributes)
+        debugger
+        @article = current_user.articles.new(create_attributes)
+        if @article.save
             render json: {code: 200, message: 'Article created'}
         else
             render json: {code: 200, message: 'Article not created'}
@@ -33,8 +29,7 @@ class ArticlesController < ApplicationController
     private
 
     def create_attributes
-        params[:article][:creator_id] = current_user.id
-        params.require(:article).permit(:name, :creator_id)
+        params.require(:article).permit(:name)
     end
 end
   
